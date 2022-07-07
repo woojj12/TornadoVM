@@ -47,6 +47,8 @@ public interface ProfileInterface {
 
     long getCompileTime();
 
+    long getByteCodeTime();
+
     long getTornadoCompilerTime();
 
     long getDriverInstallTime();

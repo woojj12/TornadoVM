@@ -99,11 +99,11 @@ public class TornadoOptions {
     /**
      * Prints the generated code by the TornadoVM compiler. Default is False.
      */
-    public static final boolean PRINT_SOURCE = Boolean.parseBoolean(getProperty("tornado.print.kernel", FALSE));
+    public static boolean PRINT_SOURCE = Boolean.parseBoolean(getProperty("tornado.print.kernel", FALSE));
     /**
      * Prints the generated code by the TornadoVM compiler. Default is False.
      */
-    public static final String PRINT_SOURCE_DIRECTORY = getProperty("tornado.print.kernel.dir", "");
+    public static String PRINT_SOURCE_DIRECTORY = getProperty("tornado.print.kernel.dir", "");
     /**
      * Once the internal buffers storing events are full, it will start to circulate
      * old events and overwrite them with new ones. Default is True.

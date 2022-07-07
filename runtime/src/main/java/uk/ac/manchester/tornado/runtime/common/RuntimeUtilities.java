@@ -29,8 +29,6 @@ package uk.ac.manchester.tornado.runtime.common;
 
 import static uk.ac.manchester.tornado.runtime.common.Tornado.error;
 import static uk.ac.manchester.tornado.runtime.common.Tornado.info;
-import static uk.ac.manchester.tornado.runtime.common.TornadoOptions.PRINT_SOURCE;
-import static uk.ac.manchester.tornado.runtime.common.TornadoOptions.PRINT_SOURCE_DIRECTORY;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -52,6 +50,8 @@ import jdk.vm.ci.meta.JavaKind;
 import jdk.vm.ci.meta.ResolvedJavaMethod;
 import jdk.vm.ci.meta.Signature;
 import uk.ac.manchester.tornado.api.exceptions.TornadoRuntimeException;
+
+import uk.ac.manchester.tornado.runtime.common.TornadoOptions;
 
 public class RuntimeUtilities {
 
@@ -358,12 +358,12 @@ public class RuntimeUtilities {
     }
 
     public static void maybePrintSource(byte[] source) {
-        if (PRINT_SOURCE) {
+        if (TornadoOptions.PRINT_SOURCE) {
             String sourceCode = new String(source);
-            if (PRINT_SOURCE_DIRECTORY.isEmpty()) {
+            if (TornadoOptions.PRINT_SOURCE_DIRECTORY.isEmpty()) {
                 System.out.println(sourceCode);
             } else {
-                File fileLog = new File(PRINT_SOURCE_DIRECTORY);
+                File fileLog = new File(TornadoOptions.PRINT_SOURCE_DIRECTORY);
                 try (FileWriter file = new FileWriter(fileLog, RuntimeUtilities.ifFileExists(fileLog))) {
                     file.write(sourceCode);
                     file.write("\n");

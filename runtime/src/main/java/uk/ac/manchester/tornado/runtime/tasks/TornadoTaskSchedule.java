@@ -1900,7 +1900,12 @@ public class TornadoTaskSchedule implements AbstractTaskGraph {
 
     @Override
     public long getCompileTime() {
-        return timeProfiler.getTimer(ProfilerType.TOTAL_GRAAL_COMPILE_TIME) + timeProfiler.getTimer(ProfilerType.TOTAL_DRIVER_COMPILE_TIME);
+        return timeProfiler.getTimer(ProfilerType.TOTAL_GRAAL_COMPILE_TIME) + timeProfiler.getTimer(ProfilerType.TOTAL_DRIVER_COMPILE_TIME) + timeProfiler.getTimer(ProfilerType.TOTAL_BYTE_CODE_GENERATION);
+    }
+
+    @Override
+    public long getByteCodeTime() {
+        return timeProfiler.getTimer(ProfilerType.TOTAL_BYTE_CODE_GENERATION);
     }
 
     @Override

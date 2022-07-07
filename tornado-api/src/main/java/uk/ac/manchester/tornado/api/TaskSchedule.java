@@ -399,6 +399,10 @@ public class TaskSchedule implements TornadoAPI, ProfileInterface {
     public long getCompileTime() {
         return taskScheduleImpl.getCompileTime();
     }
+    @Override
+    public long getByteCodeTime() {
+        return taskScheduleImpl.getByteCodeTime();
+    }
 
     @Override
     public long getTornadoCompilerTime() {
