@@ -42,6 +42,7 @@ import jdk.vm.ci.code.InvalidInstalledCodeException;
 import uk.ac.manchester.tornado.api.TaskSchedule;
 import uk.ac.manchester.tornado.api.common.TaskPackage;
 import uk.ac.manchester.tornado.api.common.TornadoDevice;
+import uk.ac.manchester.tornado.api.common.Access;
 import uk.ac.manchester.tornado.api.enums.TornadoDeviceType;
 import uk.ac.manchester.tornado.api.exceptions.TornadoRuntimeException;
 import uk.ac.manchester.tornado.api.runtime.TornadoRuntime;
@@ -54,7 +55,12 @@ import uk.ac.manchester.tornado.runtime.analyzer.ReduceCodeAnalysis.REDUCE_OPERA
 import uk.ac.manchester.tornado.runtime.common.TornadoOptions;
 import uk.ac.manchester.tornado.runtime.tasks.meta.MetaDataUtils;
 
-class ReduceTaskSchedule {
+public class ReduceTaskSchedule {
+    public static boolean USE_PREBUILT = false;
+    public static String PREBUILT_FILE = null;
+    public static String ENTRY_POINT = null;
+    public static Access[] ACCESS = null;
+    public static int[] DIM = null;
 
     private static final String EXCEPTION_MESSAGE_ERROR = "[ERROR] reduce type not supported yet: ";
     private static final String OPERATION_NOT_SUPPORTED_MESSAGE = "Operation not supported";
@@ -106,12 +112,12 @@ class ReduceTaskSchedule {
         TornadoDevice deviceToRun = TornadoCoreRuntime.getTornadoRuntime().getDriver(driverIndex).getDevice(device);
         switch (deviceType) {
             case CPU:
+                return deviceToRun.getAvailableProcessors() + 1;
             case GPU:
             case ACCELERATOR:
-                return deviceToRun.getAvailableProcessors() + 1;
-                //return inputSize > calculateAcceleratorGroupSize(deviceToRun, inputSize) ? (inputSize / calculateAcceleratorGroupSize(deviceToRun, inputSize)) + 1 : 2;
+                return inputSize > calculateAcceleratorGroupSize(deviceToRun, inputSize) ? (inputSize / calculateAcceleratorGroupSize(deviceToRun, inputSize)) + 1 : 2;
             default:
-                break;
+                break;             
         }
         return 0;
     }
@@ -519,7 +525,16 @@ class ReduceTaskSchedule {
                 }
             }
 
-            rewrittenTaskSchedule.addTask(taskPackages.get(taskNumber));
+            if (USE_PREBUILT == false) {
+                rewrittenTaskSchedule.addTask(taskPackages.get(taskNumber));
+            }
+            else {
+                //TaskPackage taskPackage = taskPackages.get(taskNumber);
+                String id = taskPackage.getId();
+                Object[] args = taskPackage.getTaskParameters();
+                Object[] newArgs = Arrays.copyOfRange(args, 1, args.length);
+                rewrittenTaskSchedule.prebuiltTask(id, ENTRY_POINT, PREBUILT_FILE, newArgs, ACCESS, TornadoRuntime.getTornadoRuntime().getDefaultDevice(), DIM);
+            }
 
             // Add extra task with the final reduction
             if (tableReduce.containsKey(taskNumber)) {
@@ -545,21 +560,29 @@ class ReduceTaskSchedule {
                         TornadoRuntime.setProperty(fullName + ".device", driverToRun + ":" + deviceToRun);
                         inspectBinariesFPGA(taskScheduleReduceName, tsName, taskPackage.getId(), true);
 
-                        switch (operation) {
-                            case ADD:
-                                ReduceFactory.handleAdd(newArray, rewrittenTaskSchedule, sizeReduceArray, newTaskSequentialName);
-                                break;
-                            case MUL:
-                                ReduceFactory.handleMul(newArray, rewrittenTaskSchedule, sizeReduceArray, newTaskSequentialName);
-                                break;
-                            case MAX:
-                                ReduceFactory.handleMax(newArray, rewrittenTaskSchedule, sizeReduceArray, newTaskSequentialName);
-                                break;
-                            case MIN:
-                                ReduceFactory.handleMin(newArray, rewrittenTaskSchedule, sizeReduceArray, newTaskSequentialName);
-                                break;
-                            default:
-                                throw new TornadoRuntimeException("[ERROR] Reduce operation not supported yet.");
+                        if (USE_PREBUILT == false) {
+                            switch (operation) {
+                                case ADD:
+                                    ReduceFactory.handleAdd(newArray, rewrittenTaskSchedule, sizeReduceArray, newTaskSequentialName);
+                                    break;
+                                case MUL:
+                                    ReduceFactory.handleMul(newArray, rewrittenTaskSchedule, sizeReduceArray, newTaskSequentialName);
+                                    break;
+                                case MAX:
+                                    ReduceFactory.handleMax(newArray, rewrittenTaskSchedule, sizeReduceArray, newTaskSequentialName);
+                                    break;
+                                case MIN:
+                                    ReduceFactory.handleMin(newArray, rewrittenTaskSchedule, sizeReduceArray, newTaskSequentialName);
+                                    break;
+                                default:
+                                    throw new TornadoRuntimeException("[ERROR] Reduce operation not supported yet.");
+                            }
+                        }
+                        else {
+                            Object[] args = {newArray, sizeReduceArray};
+                            Access[] accesses = {Access.READ, Access.NONE};
+                            int[] dims = {1};
+                            rewrittenTaskSchedule.prebuiltTask(newTaskSequentialName, "rAdd", PREBUILT_FILE, args, accesses, TornadoRuntime.getTornadoRuntime().getDefaultDevice(), dims);
                         }
 
                         if (hybridMode) {

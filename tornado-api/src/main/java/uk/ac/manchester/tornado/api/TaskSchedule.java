@@ -236,7 +236,7 @@ public class TaskSchedule implements TornadoAPI, ProfileInterface {
 
     @Override
     public TaskSchedule prebuiltTask(String id, String entryPoint, String filename, Object[] args, Access[] accesses, TornadoDevice device, int[] dimensions) {
-        checkTaskName(id);
+        //checkTaskName(id);
         taskScheduleImpl.addPrebuiltTask(id, entryPoint, filename, args, accesses, device, dimensions);
         return this;
     }

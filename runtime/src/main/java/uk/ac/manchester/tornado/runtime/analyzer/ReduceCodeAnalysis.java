@@ -379,6 +379,13 @@ public class ReduceCodeAnalysis {
                         inputSize = Integer.parseInt(constant.getValue().toValueString());
                     }
                 }
+                if (loopBound.isEmpty() == true) {
+                    Object object = taskPackages.get(taskIndex).getTaskParameters()[i + 1];
+                    int tempInputSize = Array.getLength(object);
+                    if (tempInputSize > inputSize) {
+                        inputSize = tempInputSize;
+                    }
+                }
             }
 
             MetaReduceTasks reduceTasks = new MetaReduceTasks(taskIndex, graph, reduceIndices, inputSize);
