@@ -155,7 +155,7 @@ public class OCLMemoryManager extends TornadoLogger implements TornadoMemoryProv
      *
      * @return {@link OCLByteBuffer}
      */
-    public OCLByteBuffer getSubBuffer(final int offset, final int length) {
+    public OCLByteBuffer getSubBuffer(final long offset, final int length) {
         return new OCLByteBuffer(deviceContext, offset, length);
     }
 

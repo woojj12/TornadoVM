@@ -244,7 +244,7 @@ public abstract class OCLArrayWrapper<T> implements ObjectBuffer {
     }
 
     private OCLByteBuffer getArrayHeader() {
-        final OCLByteBuffer header = deviceContext.getMemoryManager().getSubBuffer((int) getBufferOffset(), arrayHeaderSize);
+        final OCLByteBuffer header = deviceContext.getMemoryManager().getSubBuffer((long) getBufferOffset(), arrayHeaderSize);
         header.buffer.clear();
         return header;
     }
