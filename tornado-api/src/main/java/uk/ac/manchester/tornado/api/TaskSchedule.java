@@ -65,6 +65,7 @@ import uk.ac.manchester.tornado.api.common.TornadoFunctions.Task8;
 import uk.ac.manchester.tornado.api.common.TornadoFunctions.Task9;
 import uk.ac.manchester.tornado.api.exceptions.TornadoTaskRuntimeException;
 import uk.ac.manchester.tornado.api.profiler.ProfileInterface;
+import uk.ac.manchester.tornado.api.profiler.TornadoProfiler;
 import uk.ac.manchester.tornado.api.runtime.TornadoAPIProvider;
 
 /**
@@ -388,6 +389,10 @@ public class TaskSchedule implements TornadoAPI, ProfileInterface {
     @Override
     public void waitOn() {
         taskScheduleImpl.waitOn();
+    }
+
+    public TornadoProfiler getTornadoProfiler() {
+        return taskScheduleImpl.getTornadoProfiler();
     }
 
     @Override

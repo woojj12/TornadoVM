@@ -53,6 +53,7 @@ import uk.ac.manchester.tornado.runtime.analyzer.MetaReduceTasks;
 import uk.ac.manchester.tornado.runtime.analyzer.ReduceCodeAnalysis;
 import uk.ac.manchester.tornado.runtime.analyzer.ReduceCodeAnalysis.REDUCE_OPERATION;
 import uk.ac.manchester.tornado.runtime.common.TornadoOptions;
+import uk.ac.manchester.tornado.api.profiler.TornadoProfiler;
 import uk.ac.manchester.tornado.runtime.tasks.meta.MetaDataUtils;
 
 public class ReduceTaskSchedule {
@@ -89,6 +90,8 @@ public class ReduceTaskSchedule {
     private boolean hybridMode;
     private HashMap<Object, REDUCE_OPERATION> hybridMergeTable;
     private boolean hybridInitialized;
+
+    public TornadoProfiler getTornadoProfiler() { return rewrittenTaskSchedule.getTornadoProfiler();}
 
     ReduceTaskSchedule(String taskScheduleID, ArrayList<TaskPackage> taskPackages, ArrayList<Object> streamInObjects, ArrayList<Object> streamOutObjects, CachedGraph<?> graph) {
         this.taskPackages = taskPackages;

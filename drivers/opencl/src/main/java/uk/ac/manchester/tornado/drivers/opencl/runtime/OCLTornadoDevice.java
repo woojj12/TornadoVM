@@ -304,6 +304,8 @@ public class OCLTornadoDevice implements TornadoAcceleratorDevice {
         try {
             final byte[] source = Files.readAllBytes(path);
 
+            TornadoProfiler profiler = task.getProfiler();
+            profiler.start(ProfilerType.TASK_COMPILE_DRIVER_TIME, task.getId());
             OCLInstalledCode installedCode;
             if (OCLBackend.isDeviceAnFPGAAccelerator(deviceContext)) {
                 // A) for FPGA
@@ -312,6 +314,9 @@ public class OCLTornadoDevice implements TornadoAcceleratorDevice {
                 // B) for CPU multi-core or GPU
                 installedCode = deviceContext.installCode(executable.meta(), task.getId(), executable.getEntryPoint(), source);
             }
+            profiler.stop(ProfilerType.TASK_COMPILE_DRIVER_TIME, task.getId());
+            profiler.sum(ProfilerType.TOTAL_DRIVER_COMPILE_TIME, profiler.getTaskTimer(ProfilerType.TASK_COMPILE_DRIVER_TIME, task.getId()));
+
             return installedCode;
         } catch (IOException e) {
             e.printStackTrace();
@@ -325,7 +330,7 @@ public class OCLTornadoDevice implements TornadoAcceleratorDevice {
         } else if (task instanceof PrebuiltTask) {
             return compilePreBuiltTask(task);
         }
-        TornadoInternalError.shouldNotReachHere("task of unknown type: " + task.getClass().getSimpleName());
+            TornadoInternalError.shouldNotReachHere("task of unknown type: " + task.getClass().getSimpleName());
         return null;
     }
 

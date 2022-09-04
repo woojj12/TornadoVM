@@ -49,6 +49,7 @@ import uk.ac.manchester.tornado.api.common.TaskPackage;
 import uk.ac.manchester.tornado.api.common.TornadoDevice;
 import uk.ac.manchester.tornado.api.mm.TaskMetaDataInterface;
 import uk.ac.manchester.tornado.api.profiler.ProfileInterface;
+import uk.ac.manchester.tornado.api.profiler.TornadoProfiler;
 
 public interface AbstractTaskGraph extends ProfileInterface {
 
@@ -131,4 +132,6 @@ public interface AbstractTaskGraph extends ProfileInterface {
     void useDefaultThreadScheduler(boolean use);
 
     boolean isFinished();
+
+    TornadoProfiler getTornadoProfiler();
 }

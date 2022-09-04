@@ -176,6 +176,9 @@ public class TornadoTaskSchedule implements AbstractTaskGraph {
     private boolean isFinished;
     private GridScheduler gridScheduler;
 
+    @Override
+    public TornadoProfiler getTornadoProfiler() { return timeProfiler;}
+
     /**
      * Task Schedule implementation that uses GPU/FPGA and multi-core backends.
      *
@@ -1900,22 +1903,58 @@ public class TornadoTaskSchedule implements AbstractTaskGraph {
 
     @Override
     public long getCompileTime() {
-        return timeProfiler.getTimer(ProfilerType.TOTAL_GRAAL_COMPILE_TIME) + timeProfiler.getTimer(ProfilerType.TOTAL_DRIVER_COMPILE_TIME) + timeProfiler.getTimer(ProfilerType.TOTAL_BYTE_CODE_GENERATION);
+        //return timeProfiler.getTimer(ProfilerType.TOTAL_GRAAL_COMPILE_TIME) + timeProfiler.getTimer(ProfilerType.TOTAL_DRIVER_COMPILE_TIME) + timeProfiler.getTimer(ProfilerType.TOTAL_BYTE_CODE_GENERATION);
+        long mainContextTime = timeProfiler.getTimer(ProfilerType.TOTAL_GRAAL_COMPILE_TIME) + timeProfiler.getTimer(ProfilerType.TOTAL_DRIVER_COMPILE_TIME) + timeProfiler.getTimer(ProfilerType.TOTAL_BYTE_CODE_GENERATION);
+        long rewrittenContextTime = 0;
+        if (reduceExpressionRewritten == true && reduceTaskScheduleMeta != null) {
+            TornadoProfiler profiler = reduceTaskScheduleMeta.getTornadoProfiler();
+            if (profiler != null) {
+                rewrittenContextTime = profiler.getTimer(ProfilerType.TOTAL_GRAAL_COMPILE_TIME) + profiler.getTimer(ProfilerType.TOTAL_DRIVER_COMPILE_TIME) + profiler.getTimer(ProfilerType.TOTAL_BYTE_CODE_GENERATION);
+            }
+        }
+        return mainContextTime + rewrittenContextTime;
     }
 
     @Override
     public long getByteCodeTime() {
-        return timeProfiler.getTimer(ProfilerType.TOTAL_BYTE_CODE_GENERATION);
+        //return timeProfiler.getTimer(ProfilerType.TOTAL_BYTE_CODE_GENERATION);
+        long mainContextTime = timeProfiler.getTimer(ProfilerType.TOTAL_BYTE_CODE_GENERATION);
+        long rewrittenContextTime = 0;
+        if (reduceExpressionRewritten == true && reduceTaskScheduleMeta != null) {
+            TornadoProfiler profiler = reduceTaskScheduleMeta.getTornadoProfiler();
+            if (profiler != null) {
+                rewrittenContextTime = profiler.getTimer(ProfilerType.TOTAL_BYTE_CODE_GENERATION);
+            }
+        }
+        return mainContextTime + rewrittenContextTime;
     }
 
     @Override
     public long getTornadoCompilerTime() {
-        return timeProfiler.getTimer(ProfilerType.TOTAL_GRAAL_COMPILE_TIME);
+        //return timeProfiler.getTimer(ProfilerType.TOTAL_GRAAL_COMPILE_TIME);
+        long mainContextTime = timeProfiler.getTimer(ProfilerType.TOTAL_GRAAL_COMPILE_TIME);
+        long rewrittenContextTime = 0;
+        if (reduceExpressionRewritten == true && reduceTaskScheduleMeta != null) {
+            TornadoProfiler profiler = reduceTaskScheduleMeta.getTornadoProfiler();
+            if (profiler != null) {
+                rewrittenContextTime = profiler.getTimer(ProfilerType.TOTAL_GRAAL_COMPILE_TIME);
+            }
+        }
+        return mainContextTime + rewrittenContextTime;
     }
 
     @Override
     public long getDriverInstallTime() {
-        return timeProfiler.getTimer(ProfilerType.TOTAL_DRIVER_COMPILE_TIME);
+        //return timeProfiler.getTimer(ProfilerType.TOTAL_DRIVER_COMPILE_TIME);
+        long mainContextTime = timeProfiler.getTimer(ProfilerType.TOTAL_DRIVER_COMPILE_TIME);
+        long rewrittenContextTime = 0;
+        if (reduceExpressionRewritten == true && reduceTaskScheduleMeta != null) {
+            TornadoProfiler profiler = reduceTaskScheduleMeta.getTornadoProfiler();
+            if (profiler != null) {
+                rewrittenContextTime = profiler.getTimer(ProfilerType.TOTAL_DRIVER_COMPILE_TIME);
+            }
+        }
+        return mainContextTime + rewrittenContextTime;
     }
 
     @Override
