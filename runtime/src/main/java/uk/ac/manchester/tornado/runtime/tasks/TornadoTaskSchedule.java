@@ -378,6 +378,10 @@ public class TornadoTaskSchedule implements AbstractTaskGraph {
         if (this.gridScheduler == null) {
             triggerRecompile();
         }
+
+        if (reduceAnalysis == true && reduceTaskScheduleMeta != null) {
+            reduceTaskScheduleMeta.updateReference(oldRef, newRef);
+        }
     }
 
     @Override

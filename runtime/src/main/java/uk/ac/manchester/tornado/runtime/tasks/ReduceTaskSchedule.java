@@ -92,6 +92,7 @@ public class ReduceTaskSchedule {
     private boolean hybridInitialized;
 
     public TornadoProfiler getTornadoProfiler() { return rewrittenTaskSchedule.getTornadoProfiler();}
+    public void updateReference(Object oldRef, Object newRef) { rewrittenTaskSchedule.updateReference(oldRef, newRef);}
 
     ReduceTaskSchedule(String taskScheduleID, ArrayList<TaskPackage> taskPackages, ArrayList<Object> streamInObjects, ArrayList<Object> streamOutObjects, CachedGraph<?> graph) {
         this.taskPackages = taskPackages;
